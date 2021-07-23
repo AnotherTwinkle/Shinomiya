@@ -1,0 +1,1 @@
+Shinomiya is the go-to bot for The Motherland of Degeneratia.
