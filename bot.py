@@ -1,8 +1,11 @@
 import discord
 from discord.ext import commands
 import config
-
+import asyncpg
+import aiohttp
 import time
+from cogs import db
+from cogs.utils import assets
 
 class Shinomiya(commands.Bot):
 
@@ -27,6 +30,20 @@ class Shinomiya(commands.Bot):
 		#We will add a customizable prefix later, these are the mere defaults.
 
 		return commands.when_mentioned_or(*prefixes)(bot, message)
+	
+
+	async def start(self, *args, **kwargs):
+		self.session = aiohttp.ClientSession(loop= self.loop)
+		self.pool = await asyncpg.create_pool(config.postgresql, min_size= 5, max_size= 5)
+		await db.initialize_db(self.pool)
+		await super().start(*args, **kwargs)
+
+
+	async def close(self, *args, **kwargs):
+		await self.session.close()
+		await self.pool.close()		
+		print(f'[{time.time()}]: Shuting down...')
+		await super().close(*args, **kwargs)
 
 
 	async def on_ready(self):
@@ -45,17 +62,25 @@ class Shinomiya(commands.Bot):
 			return
 
 		error = getattr(error, 'original', error)
-		ignored = (commands.CheckFailure,commands.CommandNotFound)
+		ignored = (commands.CommandNotFound)
 
 		if isinstance(error, ignored):
 			pass
+		
+		elif isinstance(error, commands.NotOwner):
+			await ctx.reply(content='My my, trying to use owner commands are we?', 
+							file=(await assets.kawai_koto.file()))
 
-			#Room for more checks here
+
+		elif isinstance(error, commands.MissingPermissions):
+			await ctx.reply(content='Disgrace to humanity, Cattle in human form. Trying to use a command without enough permissions.',
+							file=(await assets.kaguya_cattle_stare.file()))
 
 		else:
-			raise error
+			 raise error
 
 
 if __name__ == '__main__':
-	bot= Shinomiya()
+	bot = Shinomiya()
 	bot.run(config.token)
+

@@ -1,6 +1,7 @@
 from io import BytesIO
 import time
 import aiohttp
+import traceback
 
 from discord.ext import commands
 import discord
@@ -28,3 +29,20 @@ def discord_timestamp(target: int= time.time(), style : str = 'f'):
 	return f'<t:{target}:{style}>'
 	
 
+async def send_traceback(destination: discord.abc.Messageable, verbosity: int, *exc_info):
+
+	etype, value, trace = exc_info
+
+	traceback_content = "".join(traceback.format_exception(etype, value, trace, verbosity)).replace("``", "`\u200b`")
+
+	paginator = commands.Paginator(prefix='py')
+	for line in traceback_content.split('\n'):
+		paginator.add_line(line)
+
+	message = None
+
+	for page in paginator.pages:
+		message = await destination.send(f'```{page}')
+
+
+	return message
