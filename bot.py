@@ -13,7 +13,7 @@ class Shinomiya(commands.Bot):
 		intents = discord.Intents.all()
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
 
-		boot_extensions = ['jishaku']
+		boot_extensions = ['jishaku','cogs.kaguya']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 
@@ -42,7 +42,7 @@ class Shinomiya(commands.Bot):
 	async def close(self, *args, **kwargs):
 		await self.session.close()
 		await self.pool.close()		
-		print(f'[{time.time()}]: Shuting down...')
+		print(f'[{round(time.time())}]: Shuting down...')
 		await super().close(*args, **kwargs)
 
 
