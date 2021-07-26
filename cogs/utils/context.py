@@ -8,10 +8,10 @@ class Context(commands.Context):
 		super().__init__(**kwargs)
 
 
-	async def send(self, content, **kwargs):
+	async def send(self, content= None, **kwargs):
 		'''Sends a messsage, sends a file if the message is too big'''
 
-		if len(content) > 2000:
+		if content and len(content) > 2000:
 			file = io.BytesIO(content.encode())
 			kwargs.pop(file, None)
 			return await super().send(file= discord.File(file, filename= 'chunky_message.txt'), **kwargs)

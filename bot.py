@@ -13,10 +13,6 @@ class Shinomiya(commands.Bot):
 		intents = discord.Intents.all()
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
 
-		boot_extensions = ['jishaku','cogs.kaguya']
-		for ext in boot_extensions:
-			self.load_extension(ext)
-
 		if hasattr(config, 'owner_ids'):
 			self.owner_ids = set(config.owner_ids)
 
@@ -39,6 +35,10 @@ class Shinomiya(commands.Bot):
 		self.session = aiohttp.ClientSession(loop= self.loop)
 		self.pool = await asyncpg.create_pool(config.postgresql, min_size= 5, max_size= 5)
 		await db.initialize_db(self.pool)
+		boot_extensions = ['jishaku','cogs.kaguya']
+		for ext in boot_extensions:
+			self.load_extension(ext)
+
 		await super().start(*args, **kwargs)
 
 
