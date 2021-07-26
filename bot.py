@@ -5,7 +5,7 @@ import asyncpg
 import aiohttp
 import time
 from cogs import db
-from cogs.utils import assets
+from cogs.utils import assets, context
 
 class Shinomiya(commands.Bot):
 
@@ -30,6 +30,9 @@ class Shinomiya(commands.Bot):
 		#We will add a customizable prefix later, these are the mere defaults.
 
 		return commands.when_mentioned_or(*prefixes)(bot, message)
+
+	async def get_context(self, message, *, cls= None):
+		return await super().get_context(message, cls= cls or context.Context)
 	
 
 	async def start(self, *args, **kwargs):
