@@ -41,7 +41,7 @@ class Kaguya(commands.Cog):
             e.add_field(name= 'Released', value=f'<t:{chapter.release_date}:R>')
             embeds.append(e)
 
-        pag = paginator.PaginatorClassic(ctx, embeds)
+        pag = paginator.PaginatorClassic(ctx, embeds, start-1)
         await ctx.send(embed=embeds[start- 1], view= pag)
 
 class Chapter:
@@ -53,7 +53,6 @@ class Chapter:
         self.folder = data['folder']
         self.release_date = int(data['release_date']['1'])
         self.page_count= len(data['groups']['1'])
-        print(data['groups'])
 
     def _page(self, num):
         try:

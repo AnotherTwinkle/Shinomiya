@@ -18,11 +18,11 @@ class PaginatorClassic(discord.ui.View):
 
 	children: List[discord.ui.Button]
 
-	def __init__(self, ctx: Context,embeds: List[discord.Embed]):
+	def __init__(self, ctx: Context,embeds: List[discord.Embed],init_pos: int= 0):
 	    super().__init__(timeout=300.0)
 	    self.ctx = ctx
 	    self.embeds: List[discord.Embed] = embeds
-	    self.embed_pos = 0
+	    self.embed_pos = init_pos
 	    self.max = len(embeds)
 
 	    for i, embed in enumerate(self.embeds):
@@ -48,7 +48,7 @@ class PaginatorClassic(discord.ui.View):
 	@discord.ui.button(emoji="\U000023ea", style=discord.ButtonStyle.primary)
 	async def backward_next(self, button: discord.ui.Button, interaction: discord.Interaction):
 		if self.embed_pos - 1 < 0:
-			return await interaction.response.send_message("First page", ephemeral=True)
+			return await interaction.response.send_message("uh- that's the first page.", ephemeral=True)
 		self.embed_pos -= 1
 		await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
 
@@ -64,7 +64,7 @@ class PaginatorClassic(discord.ui.View):
 	@discord.ui.button(emoji="\U000023e9", style=discord.ButtonStyle.primary)
 	async def forward_next(self, button: discord.ui.Button, interaction: discord.Interaction):
 		if self.embed_pos + 1 >= self.max:
-			return await interaction.response.send_message("Last page", ephemeral=True)
+			return await interaction.response.send_message("That's actually the last page lol.", ephemeral=True)
 		self.embed_pos += 1
 		await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
 
