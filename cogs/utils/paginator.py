@@ -4,7 +4,7 @@ from typing import List
 import discord
 
 
-
+#Courtesy of Daggy#1234 : https://github.com/Daggy1234/dagbot/blob/master/dagbot/utils/conventionalpag.py
 class PaginatorSelect(discord.ui.Select['PaginatorClassic']):
 
 	def __init__(self, options: List[discord.SelectOption]) -> None:
