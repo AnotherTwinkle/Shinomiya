@@ -27,7 +27,7 @@ class Shinomiya(commands.Bot):
 			'k!',
 			'.',
 		)
-		#We will add a customizable prefix later, these are the mere defaults.
+
 
 		return commands.when_mentioned_or(*prefixes)(bot, message)
 
