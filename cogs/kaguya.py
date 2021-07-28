@@ -1,71 +1,178 @@
-from discord.ext import commands
+import asyncio
+from datetime import datetime
+from typing import List
+
 import discord
-from .utils import paginator
+from discord.ext import commands
 
 class Kaguya(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-        self.bot.loop.create_task(self._get_guyamoe_json())
-    
-    async def _get_guyamoe_json(self):
-        url= 'https://guya.moe/api/series/Kaguya-Wants-To-Be-Confessed-To'
-        async with self.bot.session.get(url) as page:
-            self.data = await page.json()            
-    
-    async def get_chapter(self, n: int):
-        try:
-            return Chapter(n, self.data['chapters'][str(n)])
-        except KeyError:
-            return None
+	def __init__(self, bot: commands.Bot):
+		self.bot = bot
+		self.bot.loop.create_task(self.cache_chapters())
 
-    @commands.command()
-    async def kaguya(self, ctx, ch: float, start: int= 1):
 
-        ch = int(ch) if ch.is_integer() else ch
-        # Chapters names can be floats, but always an integer when not
-        # If that makes sense.
+	async def cache_chapters(self):
+		url= 'https://guya.moe/api/series/Kaguya-Wants-To-Be-Confessed-To'
+		async with self.bot.session.get(url) as page:
+			self.data = await page.json()
 
-        chapter= await self.get_chapter(ch)
-        if chapter is None:
-            return await ctx.send('Chapter not found :(')
+		chdata = self.data['chapters']
+		self.chapters= []
+		for n in (chdata.keys()):
+			self.chapters.append(Chapter(float(n), chdata[str(n)]))
 
-        pages = [chapter.page(n) for n in range(1, chapter.page_count+1)]
 
-        if start not in range(1, len(pages)+1):
-            return await ctx.send('Specified page out of range :(')
+	async def get_chapter(self, n: int):
+		chapter = [chapter for chapter in self.chapters if chapter.index == n]
+		return chapter[0] if chapter else None
 
-        embeds= []
-        for page in pages:
-            e= discord.Embed(title=f'Chapter {chapter.index}: {chapter.title}', color= ctx.me.color).set_image(url= page)
-            e.add_field(name= 'Page Count', value= str(chapter.page_count), inline= True)
-            e.add_field(name= 'Released', value=f'<t:{chapter.release_date}:R>')
-            embeds.append(e)
+	@commands.command()
+	async def kaguya(self, ctx, ch: float, start: int= 1):
+		ch = int(ch) if ch.is_integer() else ch
+		# Chapters indexes can be floats, but always an integer when not
+		# If that makes sense.
 
-        pag = paginator.PaginatorClassic(ctx, embeds, start-1)
-        await ctx.send(embed=embeds[start- 1], view= pag)
+		chapter= await self.get_chapter(ch)
+		if chapter is None:
+			return await ctx.send('Chapter not found :(')
+
+		if start not in range(1, len(chapter.pages)+1):
+			return await ctx.send('Specified page out of range :(')
+
+		embeds= []
+		for page in chapter.pages:
+			e= discord.Embed(title=f'Chapter {ch}: {chapter.title}', color= ctx.me.color).set_image(url= page)
+			e.add_field(name= 'Page Count', value= str(chapter.page_count), inline= True)
+			e.add_field(name= 'Released', value=f'<t:{chapter.release_date}:R>')
+			embeds.append(e)
+
+		pag = KaguyaPaginator(ctx, embeds, chapter, start-1)
+		return await ctx.send(embed=embeds[start- 1], view= pag)
 
 class Chapter:
-    def __init__(self, index, data):
-        self.data= data
-        self.index= index
-        self.volume = data['volume']
-        self.title = data['title']
-        self.folder = data['folder']
-        self.release_date = int(data['release_date']['1'])
-        self.page_count= len(data['groups']['1'])
+	def __init__(self, index, data):
+		self.data= data
+		self.index = index
+		self.volume = data['volume']
+		self.title = data['title']
+		self.folder = data['folder']
+		self.release_date = int(data['release_date'][list(data['release_date'].keys())[0]])
+		self.page_count= len(data['groups'][list(data['groups'].keys())[0]])
+		self.pages = [self.page(n) for n in range(1, self.page_count+1)]
 
-    def _page(self, num):
-        try:
-            return self.data['groups']['1'][num-1]
-        except IndexError:
-            return None
+	def __repr__(self):
+		return f'<Chapter {self.index}: {self.title}>'
 
-    def page(self, num):
-        url= f'https://guya.moe/media/manga/Kaguya-Wants-To-Be-Confessed-To/chapters/{self.folder}/1/'
-        page = self._page(num)
-        return (url + page) if page else None
+	def _page(self, num):
+		try:
+			return self.data['groups'][list(self.data['groups'].keys())[0]][num-1]
+		except IndexError:
+			return None
+
+	def page(self, num):
+		url= f'https://guya.moe/media/manga/Kaguya-Wants-To-Be-Confessed-To/chapters/{self.folder}/{list(self.data["groups"].keys())[0]}/'
+		page = self._page(num)
+		return (url + page) if page else None
+
+# Courtesy of Daggy#1234 : https://github.com/Daggy1234/dagbot/blob/master/dagbot/utils/conventionalpag.py
+
+class PaginatorSelect(discord.ui.Select['KaguyaPaginator']):
+	def __init__(self, options: List[discord.SelectOption]) -> None:
+		super().__init__(placeholder="Select Page to Visit", min_values=1, max_values=1, options=options, row=1)
+
+	async def callback(self, interaction: discord.Interaction):
+		assert self.view is not None
+		await self.view.process_callback(self, interaction)
+
+
+class KaguyaPaginator(discord.ui.View):
+
+	children: List[discord.ui.Button]
+
+	def __init__(self, ctx: commands.Context,embeds: List[discord.Embed], chapter: Chapter, init_pos: int= 0):
+		super().__init__(timeout=300.0)
+		self.ctx = ctx
+		self.chapter = chapter
+		self.embeds: List[discord.Embed] = embeds
+		self.embed_pos = init_pos
+		self.max = len(embeds)
+
+		for i, embed in enumerate(self.embeds):
+			embed.set_footer(text=f"{i + 1}/{self.max}")
+			embed.timestamp = datetime.now()
+
+		select_options = [discord.SelectOption(label=f"{i+1}", value=str(i)) for i in range(self.max)]
+		if self.max < 25:
+			self.add_item(PaginatorSelect(select_options))
+		# Well due to this we can't have more than 25 pages, so fuck selects.
+
+		
+	async def on_timeout(self) -> None:
+		return await super().on_timeout()
+
+	async def interaction_check(self, interaction: discord.Interaction) -> bool:
+		assert interaction.user is not None
+		return interaction.user.id == self.ctx.author.id
+
+	@discord.ui.button(emoji="\U000023ee", style=discord.ButtonStyle.primary)
+	async def forward_start(self, button: discord.ui.Button, interaction: discord.Interaction):
+
+		if self.embed_pos != 0:
+			self.embed_pos = 0
+			return await interaction.response.edit_message(embed=self.embeds[0])
+
+		await interaction.response.edit_message(content= 'Reinvoking the command...')
+		await asyncio.sleep(2)
+		await interaction.message.delete()
+		command= self.ctx.bot.get_command("kaguya")
+		previous_chapter= (self.chapter.index -1) if self.chapter.index.is_integer() else (self.chapter.index - .5)
+		return await command(self.ctx, previous_chapter)
+		
+		
+	@discord.ui.button(emoji="\U000023ea", style=discord.ButtonStyle.primary)
+	async def backward_next(self, button: discord.ui.Button, interaction: discord.Interaction):
+		if self.embed_pos - 1 < 0:
+			return await interaction.response.send_message("uh- that's the first page.", ephemeral=True)
+		self.embed_pos -= 1
+		await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
+
+	@discord.ui.button(emoji="\U000023f9", style=discord.ButtonStyle.primary)
+	async def stop_button(self, button: discord.ui.Button, interaction: discord.Interaction):
+		for button in self.children:
+			button.disabled = True
+		await interaction.response.edit_message(embed= discord.Embed(title='Closed.', color= self.ctx.me.color),
+												view=self)
+		self.stop()
+
+	
+	@discord.ui.button(emoji="\U000023e9", style=discord.ButtonStyle.primary)
+	async def forward_next(self, button: discord.ui.Button, interaction: discord.Interaction):
+		if self.embed_pos + 1 >= self.max:
+			return await interaction.response.send_message("That's actually the last page lol.", ephemeral=True)
+		self.embed_pos += 1
+		await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
+
+	@discord.ui.button(emoji="\U000023ed", style=discord.ButtonStyle.primary)
+	async def backward_end(self, button: discord.ui.Button, interaction: discord.Interaction):
+
+		if self.embed_pos != self.max - 1:
+			self.embed_pos = self.max - 1
+			return await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
+
+		await interaction.response.edit_message(content= 'Reinvoking the command...')
+		await asyncio.sleep(2)
+		await interaction.message.delete()
+		command= self.ctx.bot.get_command("kaguya")
+		next_chapter= (self.chapter.index +1) if self.chapter.index.is_integer() else (self.chapter.index + .5)
+		return await command(self.ctx, next_chapter)
+
+	async def process_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+		assert interaction.data is not None
+		print(interaction.data)
+		opt: int = int(interaction.data["values"][0])
+		await interaction.response.edit_message(embed=self.embeds[opt])
 
 
 def setup(bot):
-    bot.add_cog(Kaguya(bot))
+	bot.add_cog(Kaguya(bot))
 
