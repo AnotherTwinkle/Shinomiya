@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 
 import discord
+from discord import interactions
 from discord.ext import commands
 
 class Kaguya(commands.Cog):
@@ -18,19 +19,19 @@ class Kaguya(commands.Cog):
 
 		chdata = self.data['chapters']
 		self.chapters= []
-		for n in (chdata.keys()):
+		for n in chdata.keys():
 			self.chapters.append(Chapter(float(n), chdata[str(n)]))
 
 
-	async def get_chapter(self, n: int):
+	async def get_chapter(self, n: float):
 		chapter = [chapter for chapter in self.chapters if chapter.index == n]
 		return chapter[0] if chapter else None
+
 
 	@commands.command()
 	async def kaguya(self, ctx, ch: float, start: int= 1):
 		ch = int(ch) if ch.is_integer() else ch
-		# Chapters indexes can be floats, but always an integer when not
-		# If that makes sense.
+		# Chapters indexes can be floats.
 
 		chapter= await self.get_chapter(ch)
 		if chapter is None:
@@ -46,8 +47,9 @@ class Kaguya(commands.Cog):
 			e.add_field(name= 'Released', value=f'<t:{chapter.release_date}:R>')
 			embeds.append(e)
 
-		pag = KaguyaPaginator(ctx, embeds, chapter, start-1)
-		return await ctx.send(embed=embeds[start- 1], view= pag)
+		paginator = KaguyaPaginator(ctx, embeds, chapter, start-1)
+		return await ctx.send(ctx.author.mention, embed=embeds[start- 1], view= paginator)
+
 
 class Chapter:
 	def __init__(self, index, data):
@@ -74,11 +76,11 @@ class Chapter:
 		page = self._page(num)
 		return (url + page) if page else None
 
-# Courtesy of Daggy#1234 : https://github.com/Daggy1234/dagbot/blob/master/dagbot/utils/conventionalpag.py
 
+# Courtesy of Daggy#1234 : https://github.com/Daggy1234/dagbot/blob/master/dagbot/utils/conventionalpag.py
 class PaginatorSelect(discord.ui.Select['KaguyaPaginator']):
 	def __init__(self, options: List[discord.SelectOption]) -> None:
-		super().__init__(placeholder="Select Page to Visit", min_values=1, max_values=1, options=options, row=1)
+		super().__init__(placeholder="Jump to Page", min_values=1, max_values=1, options=options, row=1)
 
 	async def callback(self, interaction: discord.Interaction):
 		assert self.view is not None
@@ -121,11 +123,18 @@ class KaguyaPaginator(discord.ui.View):
 			self.embed_pos = 0
 			return await interaction.response.edit_message(embed=self.embeds[0])
 
+
+		command= self.ctx.bot.get_command("kaguya")
+		chapters: List[Chapter] =  self.ctx.bot.get_cog('Kaguya').chapters
+		previous_chapter= chapters[chapters.index(self.chapter)-1].index
+	
+		if previous_chapter == 1:
+			return interaction.response.send_message(content="That's the first chapter lol")
+
 		await interaction.response.edit_message(content= 'Reinvoking the command...')
 		await asyncio.sleep(2)
 		await interaction.message.delete()
-		command= self.ctx.bot.get_command("kaguya")
-		previous_chapter= (self.chapter.index -1) if self.chapter.index.is_integer() else (self.chapter.index - .5)
+
 		return await command(self.ctx, previous_chapter)
 		
 		
@@ -144,7 +153,6 @@ class KaguyaPaginator(discord.ui.View):
 												view=self)
 		self.stop()
 
-	
 	@discord.ui.button(emoji="\U000023e9", style=discord.ButtonStyle.primary)
 	async def forward_next(self, button: discord.ui.Button, interaction: discord.Interaction):
 		if self.embed_pos + 1 >= self.max:
@@ -159,11 +167,18 @@ class KaguyaPaginator(discord.ui.View):
 			self.embed_pos = self.max - 1
 			return await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
 
+		command= self.ctx.bot.get_command("kaguya")
+		chapters: List[Chapter] =  self.ctx.bot.get_cog('Kaguya').chapters
+
+		try:
+			next_chapter= chapters[chapters.index(self.chapter)+1].index
+		except IndexError:
+			return await interaction.response.send_message(content= 'Last chapter lol', ephemeral= True)	
+
 		await interaction.response.edit_message(content= 'Reinvoking the command...')
 		await asyncio.sleep(2)
 		await interaction.message.delete()
-		command= self.ctx.bot.get_command("kaguya")
-		next_chapter= (self.chapter.index +1) if self.chapter.index.is_integer() else (self.chapter.index + .5)
+
 		return await command(self.ctx, next_chapter)
 
 	async def process_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
