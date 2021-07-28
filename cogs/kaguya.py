@@ -4,7 +4,7 @@ from typing import List
 
 import discord
 from discord.ext import commands
-aaa
+
 class Kaguya(commands.Cog):
 	def __init__(self, bot: commands.Bot):
 		self.bot = bot
