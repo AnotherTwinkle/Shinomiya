@@ -1,11 +1,15 @@
+import os
+import time
+
+import aiohttp
 import discord
 from discord.ext import commands
+
 import config
-import asyncpg
-import aiohttp
-import time
-from cogs import db
 from cogs.utils import assets, context
+
+os.environ['JISHAKU_NO_UNDERSCORE'] = "True"
+os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
 class Shinomiya(commands.Bot):
 
@@ -33,9 +37,7 @@ class Shinomiya(commands.Bot):
 
 	async def start(self, *args, **kwargs):
 		self.session = aiohttp.ClientSession(loop= self.loop)
-		self.pool = await asyncpg.create_pool(config.postgresql, min_size= 5, max_size= 5)
-		await db.initialize_db(self.pool)
-		boot_extensions = ['jishaku','cogs.kaguya']
+		boot_extensions = ['jishaku','cogs.kaguya', 'cogs.admin']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 
@@ -44,10 +46,8 @@ class Shinomiya(commands.Bot):
 
 	async def close(self, *args, **kwargs):
 		await self.session.close()
-		await self.pool.close()		
 		print(f'[{round(time.time())}]: Shuting down...')
 		await super().close(*args, **kwargs)
-
 
 	async def on_ready(self):
 		print(f'{self.user}: Ready. ({self.user.id})')
@@ -86,4 +86,3 @@ class Shinomiya(commands.Bot):
 if __name__ == '__main__':
 	bot = Shinomiya()
 	bot.run(config.token)
-
