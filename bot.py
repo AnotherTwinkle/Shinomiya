@@ -37,7 +37,7 @@ class Shinomiya(commands.Bot):
 
 	async def start(self, *args, **kwargs):
 		self.session = aiohttp.ClientSession(loop= self.loop)
-		boot_extensions = ['jishaku','cogs.kaguya', 'cogs.admin']
+		boot_extensions = ['jishaku','cogs.manga', 'cogs.admin']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 

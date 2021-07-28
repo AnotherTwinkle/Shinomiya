@@ -6,11 +6,10 @@ import discord
 from discord import interactions
 from discord.ext import commands
 
-class Kaguya(commands.Cog):
+class Manga(commands.Cog):
 	def __init__(self, bot: commands.Bot):
 		self.bot = bot
 		self.bot.loop.create_task(self.cache_chapters())
-
 
 	async def cache_chapters(self):
 		url= 'https://guya.moe/api/series/Kaguya-Wants-To-Be-Confessed-To'
@@ -28,8 +27,8 @@ class Kaguya(commands.Cog):
 		return chapter[0] if chapter else None
 
 
-	@commands.command()
-	async def kaguya(self, ctx, ch: float, start: int= 1):
+	@commands.command(name= 'manga', aliases= ['kaguya', 'read', 'chapter'])
+	async def _readmanga(self, ctx, ch: float, start: int= 1):
 		ch = int(ch) if ch.is_integer() else ch
 		# Chapters indexes can be floats.
 
@@ -42,7 +41,8 @@ class Kaguya(commands.Cog):
 
 		embeds= []
 		for page in chapter.pages:
-			e= discord.Embed(title=f'Chapter {ch}: {chapter.title}', color= ctx.me.color).set_image(url= page)
+			e= discord.Embed(title=f'{chapter.title}', color= ctx.me.color).set_image(url= page)
+			e.add_field(name= 'Chapter', value= str(ch), inline= True)
 			e.add_field(name= 'Page Count', value= str(chapter.page_count), inline= True)
 			e.add_field(name= 'Released', value=f'<t:{chapter.release_date}:R>')
 			embeds.append(e)
@@ -80,7 +80,7 @@ class Chapter:
 # Courtesy of Daggy#1234 : https://github.com/Daggy1234/dagbot/blob/master/dagbot/utils/conventionalpag.py
 class PaginatorSelect(discord.ui.Select['KaguyaPaginator']):
 	def __init__(self, options: List[discord.SelectOption]) -> None:
-		super().__init__(placeholder="Jump to Page", min_values=1, max_values=1, options=options, row=1)
+		super().__init__(placeholder="Jump to Page..", min_values=1, max_values=1, options=options, row=1)
 
 	async def callback(self, interaction: discord.Interaction):
 		assert self.view is not None
@@ -124,8 +124,8 @@ class KaguyaPaginator(discord.ui.View):
 			return await interaction.response.edit_message(embed=self.embeds[0])
 
 
-		command= self.ctx.bot.get_command("kaguya")
-		chapters: List[Chapter] =  self.ctx.bot.get_cog('Kaguya').chapters
+		command= self.ctx.bot.get_command("manga")
+		chapters: List[Chapter] =  self.ctx.bot.get_cog('Manga').chapters
 		previous_chapter= chapters[chapters.index(self.chapter)-1].index
 	
 		if previous_chapter == 1:
@@ -149,8 +149,7 @@ class KaguyaPaginator(discord.ui.View):
 	async def stop_button(self, button: discord.ui.Button, interaction: discord.Interaction):
 		for button in self.children:
 			button.disabled = True
-		await interaction.response.edit_message(embed= discord.Embed(title='Closed.', color= self.ctx.me.color),
-												view=self)
+		await interaction.message.delete()
 		self.stop()
 
 	@discord.ui.button(emoji="\U000023e9", style=discord.ButtonStyle.primary)
@@ -167,8 +166,8 @@ class KaguyaPaginator(discord.ui.View):
 			self.embed_pos = self.max - 1
 			return await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
 
-		command= self.ctx.bot.get_command("kaguya")
-		chapters: List[Chapter] =  self.ctx.bot.get_cog('Kaguya').chapters
+		command= self.ctx.bot.get_command("manga")
+		chapters: List[Chapter] =  self.ctx.bot.get_cog('Manga').chapters
 
 		try:
 			next_chapter= chapters[chapters.index(self.chapter)+1].index
@@ -183,11 +182,10 @@ class KaguyaPaginator(discord.ui.View):
 
 	async def process_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
 		assert interaction.data is not None
-		print(interaction.data)
 		opt: int = int(interaction.data["values"][0])
 		await interaction.response.edit_message(embed=self.embeds[opt])
 
 
 def setup(bot):
-	bot.add_cog(Kaguya(bot))
+	bot.add_cog(Manga(bot))
 
