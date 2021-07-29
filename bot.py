@@ -37,7 +37,7 @@ class Shinomiya(commands.AutoShardedBot):
 
 	async def start(self, *args, **kwargs):
 		self.session = aiohttp.ClientSession(loop= self.loop)
-		boot_extensions = ['jishaku','cogs.manga', 'cogs.admin']
+		boot_extensions = ['jishaku', 'cogs.reader', 'cogs.search', 'cogs.admin']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 
@@ -52,6 +52,7 @@ class Shinomiya(commands.AutoShardedBot):
 	async def on_ready(self):
 		print(f'{self.user}: Ready. ({self.user.id})')
 		# print(f'{len(self.users)} users.')
+		# ^ Needs member intents lol.
 
 		if not hasattr(self, 'uptime'):
 			# on_ready can be fired multiple times in a single instance.
@@ -71,9 +72,8 @@ class Shinomiya(commands.AutoShardedBot):
 			pass
 		
 		elif isinstance(error, commands.NotOwner):
-			await ctx.reply(content='My my, trying to use owner commands are we?', 
+			await ctx.reply(content='You were trying to use owner commands without even owning the bot?', 
 							file=(await assets.kawai_koto.file()))
-
 
 		elif isinstance(error, commands.MissingPermissions):
 			await ctx.reply(content='Disgrace to humanity, Cattle in human form. Trying to use a command without enough permissions.',
