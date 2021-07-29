@@ -14,7 +14,7 @@ os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 class Shinomiya(commands.Bot):
 
 	def __init__(self, *options):
-		intents = discord.Intents.all()
+		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
 
 		if hasattr(config, 'owner_ids'):
@@ -51,7 +51,7 @@ class Shinomiya(commands.Bot):
 
 	async def on_ready(self):
 		print(f'{self.user}: Ready. ({self.user.id})')
-		print(f'{len(self.users)} users.')
+		# print(f'{len(self.users)} users.')
 
 		if not hasattr(self, 'uptime'):
 			# on_ready can be fired multiple times in a single instance.
