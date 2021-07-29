@@ -11,7 +11,7 @@ from cogs.utils import assets, context
 os.environ['JISHAKU_NO_UNDERSCORE'] = "True"
 os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
-class Shinomiya(commands.Bot):
+class Shinomiya(commands.AutoShardedBot):
 
 	def __init__(self, *options):
 		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
