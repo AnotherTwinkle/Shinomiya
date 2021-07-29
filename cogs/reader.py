@@ -191,7 +191,8 @@ class Reader(commands.Cog):
 		paginator = KaguyaPaginator(ctx, embeds, chapter, start-1)
 		return await ctx.send(ctx.author.mention, embed=embeds[start- 1], view= paginator)
 	
-	@commands.command(name= 'randommanga', aliases= ['randomanga', 'random', 'randmanga'])
+	
+	@commands.command(name= 'randomchapter', aliases= ['randommanga', 'randomanga', 'random', 'randmanga'])
 	async def _read_random_manga(self, ctx: commands.Context):
 		chapter= float(random.choice(self.chapters).index)
 		return await self._readmanga(ctx, chapter)
