@@ -44,12 +44,12 @@ class Search(commands.Cog):
 		if not result:
 			return await ctx.send('Nothing found :(')
 		
-		data = result[list(result.keys())[0]] # We'll only consider the first result.
+		data = list(result.values())[0] # We'll only consider the first result.
 
 		chapters = [int(x) if x.is_integer() else x 
 					for x in sorted([float(i.replace('-','.')) 
 					for i in data])]
-
+		
 		formatted_chapters = [str(c).replace('.','-') for c in chapters]
 
 		lines= [self.format_to_line(chapters[c], data[formatted_chapters[c]])

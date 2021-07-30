@@ -14,12 +14,11 @@ class Chapter:
 		self.title = data['title']
 		self.folder = data['folder']
 
-		_release_date= data['release_date']
-		self.release_date = int(_release_date[list(_release_date.keys())[0]])
+		_release_date = data['release_date']
+		self.release_date = int(list(_release_date.values())[0])
 
 		self._groups = data['groups']
-		self.page_count= len(self._groups[list(self._groups.keys())[0]])
-
+		self.page_count = len(list(self._groups.values())[0])
 		self.pages = [self.page(n) for n in range(1, self.page_count+1)]
 
 	def __repr__(self):
@@ -27,7 +26,7 @@ class Chapter:
 
 	def _page(self, num):
 		try:
-			return self._groups[list(self._groups.keys())[0]][num-1]
+			return list(self._groups.values())[0][num-1]
 		except IndexError:
 			return None
 
