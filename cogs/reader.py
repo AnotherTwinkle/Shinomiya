@@ -6,8 +6,6 @@ from typing import List
 import discord
 from discord.ext import commands
 
-
-
 class Chapter:
 	def __init__(self, index, data):
 		self.data= data
@@ -15,8 +13,13 @@ class Chapter:
 		self.volume = data['volume']
 		self.title = data['title']
 		self.folder = data['folder']
-		self.release_date = int(data['release_date'][list(data['release_date'].keys())[0]])
-		self.page_count= len(data['groups'][list(data['groups'].keys())[0]])
+
+		release_date= data['release_date']
+		self.release_date = int(release_date[list(release_date.keys())[0]])
+
+		groups = data['groups']
+		self.page_count= len(groups[list(groups.keys())[0]])
+		
 		self.pages = [self.page(n) for n in range(1, self.page_count+1)]
 
 	def __repr__(self):
@@ -204,7 +207,7 @@ class Reader(commands.Cog):
 	async def _read_random_page(self, ctx: commands.Context):
 		'''Gives you a random kaguya-sama chapter starting on a random page, complete with a paginator'''
 		chapter= random.choice(self.chapters)
-		page = random.choice(1, chapter.page_count + 1)
+		page = random.choice(range(1, chapter.page_count + 1))
 		return await self._readmanga(ctx, float(chapter.index), page)
 
 
