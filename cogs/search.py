@@ -62,7 +62,7 @@ class Search(commands.Cog):
 			desc = '\n'.join([line for line in group])
 			embed = discord.Embed(title= f'Search results for "{text}" in Kaguya-sama main series',
 									description= desc,
-									color= ctx.guild.me.color)
+									color= ctx.me.color)
 
 			embeds.append(embed)
 
