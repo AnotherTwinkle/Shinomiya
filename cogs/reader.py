@@ -19,11 +19,11 @@ class Chapter:
 
 		self._groups = data['groups']
 		self.page_count = len(list(self._groups.values())[0])
-		
+
 		self.pages = [self.page(n) for n in range(1, self.page_count+1)]
 
 	def __repr__(self):
-		return f'<Chapter {self.index}: {self.title}>'
+		return f'<Chapter {self.index} title= "{self.title}" page_count= {self.page_count}>'
 
 	def _page(self, num):
 		try:
