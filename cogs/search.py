@@ -18,7 +18,7 @@ class Search(commands.Cog):
 		return f'https://guya.moe/{chapter}/{page}'
 	
 	def format_to_line(self, chapter : str, pages : List[int] ) -> str:
-		string = f'`Ch {chapter}` | Pages: '
+		string = f'`Ch. {chapter}` | Pages: '
 		string+= ', '.join([f'[{page}](https://guya.moe/{chapter}/{page})' for page in pages])
 		return string
 
@@ -39,6 +39,8 @@ class Search(commands.Cog):
 
 	@commands.command(name='search')
 	async def _search(self, ctx: commands.Context, *, text: str):
+		
+		await ctx.trigger_typing()
 		result = (await self.search_in_manga(text))[text]
 		if not result:
 			return await ctx.send('Nothing found :(')
