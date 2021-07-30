@@ -36,7 +36,6 @@ class Search(commands.Cog):
 
 		return groups
 
-
 	@commands.command(name='search')
 	async def _search(self, ctx: commands.Context, *, text: str):
 		
@@ -47,9 +46,15 @@ class Search(commands.Cog):
 		
 		data = result[list(result.keys())[0]] # We'll only consider the first result.
 
-		chapters = [int(x) if x.is_integer() else x for x in sorted([float(i.replace('-','.')) for i in data])]
+		chapters = [int(x) if x.is_integer() else x 
+					for x in sorted([float(i.replace('-','.')) 
+					for i in data])]
+
 		formatted_chapters = [str(c).replace('.','-') for c in chapters]
-		lines= [self.format_to_line(chapters[c], data[formatted_chapters[c]]) for c in range(len(formatted_chapters))]
+
+		lines= [self.format_to_line(chapters[c], data[formatted_chapters[c]])
+				for c in range(len(formatted_chapters))]
+
 		groups = self.prepare_for_paginator(lines)
 
 		embeds = []
