@@ -14,12 +14,12 @@ class Chapter:
 		self.title = data['title']
 		self.folder = data['folder']
 
-		release_date= data['release_date']
-		self.release_date = int(release_date[list(release_date.keys())[0]])
+		_release_date= data['release_date']
+		self.release_date = int(_release_date[list(_release_date.keys())[0]])
 
-		groups = data['groups']
-		self.page_count= len(groups[list(groups.keys())[0]])
-		
+		self._groups = data['groups']
+		self.page_count= len(self._groups[list(self._groups.keys())[0]])
+
 		self.pages = [self.page(n) for n in range(1, self.page_count+1)]
 
 	def __repr__(self):
@@ -27,12 +27,12 @@ class Chapter:
 
 	def _page(self, num):
 		try:
-			return self.data['groups'][list(self.data['groups'].keys())[0]][num-1]
+			return self._groups[list(self._groups.keys())[0]][num-1]
 		except IndexError:
 			return None
 
 	def page(self, num):
-		url= f'https://guya.moe/media/manga/Kaguya-Wants-To-Be-Confessed-To/chapters/{self.folder}/{list(self.data["groups"].keys())[0]}/'
+		url= f'https://guya.moe/media/manga/Kaguya-Wants-To-Be-Confessed-To/chapters/{self.folder}/{list(self._groups.keys())[0]}/'
 		page = self._page(num)
 		return (url + page) if page else None
 
