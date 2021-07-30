@@ -53,7 +53,6 @@ class Search(commands.Cog):
 		groups = self.prepare_for_paginator(lines)
 
 		embeds = []
-		print(len(groups))
 		for group in groups:
 			desc = '\n'.join([line for line in group])
 			embed = discord.Embed(title= f'Search results for "{text}" in Kaguya-sama main series',
