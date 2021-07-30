@@ -102,6 +102,7 @@ class KaguyaPaginator(discord.ui.View):
 		self.embed_pos -= 1
 		await interaction.response.edit_message(embed=self.embeds[self.embed_pos])
 
+
 	@discord.ui.button(emoji="\U000023f9", style=discord.ButtonStyle.primary)
 	async def stop_button(self, button: discord.ui.Button, interaction: discord.Interaction):
 		for button in self.children:
@@ -155,7 +156,7 @@ class Reader(commands.Cog):
 			self.data = await page.json()
 
 		chdata = self.data['chapters']
-		self.chapters= []
+		self.chapters : List[Chapter]=  []
 		for n in chdata.keys():
 			self.chapters.append(Chapter(float(n), chdata[str(n)]))
 
@@ -194,8 +195,18 @@ class Reader(commands.Cog):
 	
 	@commands.command(name= 'randomchapter', aliases= ['randommanga', 'randomanga', 'random', 'randmanga'])
 	async def _read_random_manga(self, ctx: commands.Context):
+		'''Gives you a random kaguya-sama chapter, complete with a paginator'''
 		chapter= float(random.choice(self.chapters).index)
 		return await self._readmanga(ctx, chapter)
+
+
+	@commands.command(name= 'randompage')
+	async def _read_random_page(self, ctx: commands.Context):
+		'''Gives you a random kaguya-sama chapter starting on a random page, complete with a paginator'''
+		chapter= random.choice(self.chapters)
+		page = random.choice(1, chapter.page_count + 1)
+		return await self._readmanga(ctx, float(chapter.index), page)
+
 
 def setup(bot):
 	bot.add_cog(Reader(bot))
