@@ -168,14 +168,23 @@ class Reader(commands.Cog):
 		chapter = [chapter for chapter in self.chapters if chapter.index == n]
 		return chapter[0] if chapter else None
 
-	@commands.command(name= 'read', aliases= ['manga', 'chapter'])
+	@commands.command(name= 'read', aliases= ['manga', 'chapter'], brief= 'Read a kaguya-sama chapter')
 	async def _readmanga(self, ctx: commands.Context, ch: float= 1.0, start: int= 1):
-		'''
-		Allows you read the entire Kaguya-sama manga series on discord.
-		This send a paginator
+		f'''
+		Allows you read the entire Kaguya-sama manga series on discord. Extra chapters are supported too!
+		This sends a paginator that can be used to move throught pages and chapters and a dropdown is provided to jump to pages easily.
 
+		Usage:
 
+		`{ctx.clean_prefix}read <chapter> [page]`
+		Note that `page` is optional.
+
+		Examples:
+
+		`{ctx.clean_prefix}read 4`
+		`{ctx.clean_prefix} read 5 4` (Starts from page 4)
 		'''
+
 		ch = int(ch) if ch.is_integer() else ch
 		# Chapters indexes can be floats.
 
@@ -199,16 +208,30 @@ class Reader(commands.Cog):
 							embed=embeds[start- 1], view= paginator)
 	
 	
-	@commands.command(name= 'randomchapter', aliases= ['randommanga', 'randomanga', 'random', 'randmanga'])
+	@commands.command(name= 'randomchapter', aliases= ['randommanga', 'randomanga', 'randmanga'], brief= 'Read a random chapter')
 	async def _read_random_manga(self, ctx: commands.Context):
-		'''Gives you a random kaguya-sama chapter, complete with a paginator'''
+		f'''
+		Read a random kaguya-sama chapter.
+
+		Examples:
+		
+		`{ctx.clean_prefix}randomchapter`
+		'''
+
 		chapter= float(random.choice(self.chapters).index)
 		return await self._readmanga(ctx, chapter)
 
 
-	@commands.command(name= 'randompage')
+	@commands.command(name= 'randompage', brief= 'Read from a random page.')
 	async def _read_random_page(self, ctx: commands.Context):
-		'''Gives you a random kaguya-sama chapter starting on a random page, complete with a paginator'''
+		f'''
+		Read from a random page of a random kaguya-sama chapter.
+
+		Examples:
+		
+		`{ctx.clean_prefix}randompage`
+		'''
+
 		chapter= random.choice(self.chapters)
 		page = random.choice(range(1, chapter.page_count + 1))
 		return await self._readmanga(ctx, float(chapter.index), page)

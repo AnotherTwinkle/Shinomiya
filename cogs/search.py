@@ -38,6 +38,13 @@ class Search(commands.Cog):
 
 	@commands.command(name='search')
 	async def _search(self, ctx: commands.Context, *, text: str):
+		f'''
+		Search the whole manga for a certain piece of text!
+		This is just `guya.moe`'s search api, implemented and formatted for discord.
+
+		Examples:
+		`{ctx.clean_prefix}search shinomiya`
+		'''
 		
 		await ctx.trigger_typing() # Tends to take
 		result = (await self.search_in_manga(text))[text]
