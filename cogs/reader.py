@@ -168,10 +168,12 @@ class Reader(commands.Cog):
 		chapter = [chapter for chapter in self.chapters if chapter.index == n]
 		return chapter[0] if chapter else None
 
-	@commands.command(name= 'manga', aliases= ['kaguya', 'read', 'chapter'])
+	@commands.command(name= 'read', aliases= ['manga', 'chapter'])
 	async def _readmanga(self, ctx: commands.Context, ch: float= 1.0, start: int= 1):
 		'''
-		Allows you read the entire Kaguya sama manga series on discord.
+		Allows you read the entire Kaguya-sama manga series on discord.
+		This send a paginator
+
 
 		'''
 		ch = int(ch) if ch.is_integer() else ch
@@ -193,7 +195,8 @@ class Reader(commands.Cog):
 			embeds.append(e)
 
 		paginator = KaguyaPaginator(ctx, embeds, chapter, start-1)
-		return await ctx.send(ctx.author.mention, embed=embeds[start- 1], view= paginator)
+		return await ctx.send(content= f'{ctx.author.mention} Press the \U000023ee and \U000023ed buttons twice to go to the previous/next chapter!',
+							embed=embeds[start- 1], view= paginator)
 	
 	
 	@commands.command(name= 'randomchapter', aliases= ['randommanga', 'randomanga', 'random', 'randmanga'])

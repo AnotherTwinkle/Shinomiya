@@ -39,7 +39,7 @@ class Search(commands.Cog):
 	@commands.command(name='search')
 	async def _search(self, ctx: commands.Context, *, text: str):
 		
-		await ctx.trigger_typing()
+		await ctx.trigger_typing() # Tends to take
 		result = (await self.search_in_manga(text))[text]
 		if not result:
 			return await ctx.send('Nothing found :(')
@@ -70,7 +70,7 @@ class Search(commands.Cog):
 			# No need for paginator
 			return await ctx.send(embed= embeds[0])
 
-		paginator = Paginator(ctx, embeds,)
+		paginator = Paginator(ctx, embeds)
 		return await ctx.send(embed=embeds[0], view= paginator)
 
 
