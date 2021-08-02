@@ -149,6 +149,8 @@ class KaguyaPaginator(discord.ui.View):
 
 
 class Reader(commands.Cog):
+	'''A set of commands related to reading the kaguya-sama manga.'''
+
 	def __init__(self, bot: commands.Bot):
 		self.bot = bot
 		self.bot.loop.create_task(self.cache_chapters())

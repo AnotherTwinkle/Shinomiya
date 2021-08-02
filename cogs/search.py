@@ -5,6 +5,8 @@ from typing import List
 from .utils.paginator import Paginator
 
 class Search(commands.Cog):
+	'''Search the manga.'''
+
 	def __init__(self, bot : commands.AutoShardedBot):
 		self.bot = bot
 	
