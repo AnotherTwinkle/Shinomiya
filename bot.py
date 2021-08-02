@@ -17,10 +17,6 @@ class Shinomiya(commands.AutoShardedBot):
 		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
 
-		if hasattr(config, 'owner_ids'):
-			self.owner_ids = set(config.owner_ids)
-
-
 	def determine_prefix(self, bot, message):
 		prefixes = (
 			's!',
