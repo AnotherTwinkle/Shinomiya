@@ -172,19 +172,17 @@ class Reader(commands.Cog):
 
 	@commands.command(name= 'read', aliases= ['manga', 'chapter'], brief= 'Read a kaguya-sama chapter')
 	async def _readmanga(self, ctx: commands.Context, ch: float= 1.0, start: int= 1):
-		f'''
+		'''
 		Allows you read the entire Kaguya-sama manga series on discord. Extra chapters are supported too!
 		This sends a paginator that can be used to move throught pages and chapters and a dropdown is provided to jump to pages easily.
 
-		Usage:
-
-		`{ctx.clean_prefix}read <chapter> [page]`
+		**Usage:**
+		`read <chapter> [page]`
 		Note that `page` is optional.
 
-		Examples:
-
-		`{ctx.clean_prefix}read 4`
-		`{ctx.clean_prefix} read 5 4` (Starts from page 4)
+		**Examples:**
+		`read 4`
+		`read 5 4` (Starts from page 4)
 		'''
 
 		ch = int(ch) if ch.is_integer() else ch
@@ -214,10 +212,6 @@ class Reader(commands.Cog):
 	async def _read_random_manga(self, ctx: commands.Context):
 		f'''
 		Read a random kaguya-sama chapter.
-
-		Examples:
-		
-		`{ctx.clean_prefix}randomchapter`
 		'''
 
 		chapter= float(random.choice(self.chapters).index)
@@ -226,12 +220,8 @@ class Reader(commands.Cog):
 
 	@commands.command(name= 'randompage', brief= 'Read from a random page.')
 	async def _read_random_page(self, ctx: commands.Context):
-		f'''
+		'''
 		Read from a random page of a random kaguya-sama chapter.
-
-		Examples:
-		
-		`{ctx.clean_prefix}randompage`
 		'''
 
 		chapter= random.choice(self.chapters)
