@@ -20,7 +20,6 @@ class Shinomiya(commands.AutoShardedBot):
 		prefixes = (
 			's!',
 			'k!',
-			'.',
 		)
 
 
