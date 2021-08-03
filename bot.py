@@ -12,7 +12,6 @@ os.environ['JISHAKU_NO_UNDERSCORE'] = "True"
 os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
 class Shinomiya(commands.AutoShardedBot):
-
 	def __init__(self, *options):
 		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
@@ -33,7 +32,7 @@ class Shinomiya(commands.AutoShardedBot):
 
 	async def start(self, *args, **kwargs):
 		self.session = aiohttp.ClientSession(loop= self.loop)
-		boot_extensions = ['jishaku', 'cogs.admin', 'cogs.reader', 'cogs.search']
+		boot_extensions = ['jishaku', 'cogs.admin', 'cogs.meta', 'cogs.reader', 'cogs.search']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 
