@@ -68,11 +68,6 @@ class Shinomiya(commands.AutoShardedBot):
 		elif isinstance(error, commands.NotOwner):
 			await ctx.reply(content='You were trying to use owner commands without even owning the bot?', 
 							file=(await assets.kawai_koto.file()))
-
-		elif isinstance(error, commands.MissingPermissions):
-			await ctx.reply(content='Disgrace to humanity, Cattle in human form. Trying to use a command without enough permissions.',
-							file=(await assets.kaguya_cattle_stare.file()))
-
 		else:
 			 raise error
 
