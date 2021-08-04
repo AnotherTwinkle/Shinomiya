@@ -14,7 +14,7 @@ os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 class Shinomiya(commands.AutoShardedBot):
 	def __init__(self, *options):
 		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
-		super().__init__(intents= intents, command_prefix= self.determine_prefix, *options)
+		super().__init__(intents= intents, command_prefix= self.determine_prefix, max_messages= None, *options)
 
 	def determine_prefix(self, bot, message):
 		prefixes = (
