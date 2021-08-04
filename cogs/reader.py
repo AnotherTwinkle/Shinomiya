@@ -182,6 +182,7 @@ class Reader(commands.Cog):
 
 		**Examples:**
 		`read 4`
+		`read 101.5`
 		`read 5 4` (Starts from page 4)
 		'''
 
