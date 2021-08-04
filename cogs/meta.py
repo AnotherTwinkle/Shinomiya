@@ -39,6 +39,11 @@ class Meta(commands.Cog):
 		'''It\'s open source lol.'''
 		return await ctx.send('https://github.com/AnotherTwinkle/Shinomiya')
 
+	@commands.command(name='botinfo', hidden= True)
+	async def _info(self, ctx: commands.Context):
+		'''Numbers'''
+		return await ctx.send(f'{len(self.bot.guilds)} guilds. {sum([guild.member_count for guild in self.bot.guilds])} members.')
+
 
 class Help(commands.MinimalHelpCommand):
 	def get_ending_note(self):
