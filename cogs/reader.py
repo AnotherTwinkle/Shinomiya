@@ -173,7 +173,7 @@ class Reader(commands.Cog):
 	@commands.command(name= 'read', aliases= ['manga', 'chapter'], brief= 'Read a kaguya-sama chapter')
 	async def _readmanga(self, ctx: commands.Context, ch: float= 1.0, start: int= 1):
 		'''
-		Allows you read the entire Kaguya-sama manga series on discord. Extra chapters are supported too!
+		Allows you to read the entire Kaguya-sama manga series on discord. Extra chapters are supported too!
 		This sends a paginator that can be used to move throught pages and chapters and a dropdown is provided to jump to pages easily.
 
 		**Usage:**
