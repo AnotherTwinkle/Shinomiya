@@ -45,8 +45,7 @@ class Shinomiya(commands.AutoShardedBot):
 
 	async def on_ready(self):
 		print(f'{self.user}: Ready. ({self.user.id})')
-		# print(f'{len(self.users)} users.')
-		# ^ Needs member intents lol.
+		print(f'{sum([guild.member_count for guild in self.guilds])} members.')
 
 		if not hasattr(self, 'uptime'):
 			# on_ready can be fired multiple times in a single instance.
