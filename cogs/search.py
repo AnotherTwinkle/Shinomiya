@@ -42,10 +42,6 @@ class Search(commands.Cog):
 			return s
 		return None
 
-
-	def format_to_link(self, chapter: str, page : int) -> str:
-		return f'https://guya.moe/{chapter}/{page}'
-	
 	def format_to_line(self, chapter : str, pages : List[int] ) -> str:
 		string = f'`Ch. {chapter.replace("-" , ".")}` | Pages: '
 		string+= ', '.join([f'[{page}](https://guya.moe/{chapter}/{page})' for page in pages])
