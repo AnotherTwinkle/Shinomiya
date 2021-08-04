@@ -61,7 +61,7 @@ class KaguyaPaginator(discord.ui.View):
 
 		for i, embed in enumerate(self.embeds):
 			embed.set_footer(text=f"{i + 1}/{self.max}")
-			embed.timestamp = datetime.now()
+			embed.timestamp = discord.utils.utcnow()
 
 		select_options = [discord.SelectOption(label=f"{i+1}", value=str(i)) for i in range(self.max)]
 		if self.max < 25:
