@@ -30,7 +30,7 @@ class Meta(commands.Cog):
 	async def _invite(self, ctx: commands.Context):
 		'''Sends the bot's invite url'''
 
-		return await ctx.send('https://discord.com/api/oauth2/authorize?client_id=868103976451711027&permissions=0&scope=bot%20applications.commands')
+		return await ctx.send(f'https://discord.com/api/oauth2/authorize?client_id={self.bot.user.id}&permissions=0&scope=bot%20applications.commands')
 		# Because discord will soon force slash commands down our throats
 
 	@commands.command(name='source', aliases=['repo'])
