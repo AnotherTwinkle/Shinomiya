@@ -1,4 +1,4 @@
 import os
 
 token= os.getenv('token')
-webhook_config = (os.getenv('wehook_id'), os.getenv('webhook_token'))
+webhook_config = (os.getenv('webhook_id'), os.getenv('webhook_token'))
