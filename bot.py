@@ -1,20 +1,23 @@
-import os
-import time
-
-import aiohttp
-import discord
+from discord import webhook
 from discord.ext import commands
 
-import config
 from cogs.utils import assets, context
+from typing import List
+
+import config
+import os
+import time
+import aiohttp
+import discord
 
 os.environ['JISHAKU_NO_UNDERSCORE'] = "True"
 os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
 class Shinomiya(commands.AutoShardedBot):
-	def __init__(self, *options):
-		intents = discord.Intents(messages= True, guilds= True, webhooks= True)
+	def __init__(self, webhook_config: List[str], *options):
+		intents = discord.Intents(messages= True, guilds= True)	
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, max_messages= None, *options)
+		self.webhook_config = webhook_config
 
 	def determine_prefix(self, bot, message):
 		prefixes = (
@@ -22,16 +25,20 @@ class Shinomiya(commands.AutoShardedBot):
 			'k!',
 		)
 
-
 		return commands.when_mentioned_or(*prefixes)(bot, message)
+
+	@discord.utils.cached_property
+	def webhook(self):
+		wh_id, wh_token = self.webhook_config
+		hook = discord.Webhook.partial(id=wh_id, token=wh_token, session= self.session)
+		return hook
 
 	async def get_context(self, message, *, cls= None):
 		return await super().get_context(message, cls= cls or context.Context)
 	
-
 	async def start(self, *args, **kwargs):
 		self.session = aiohttp.ClientSession(loop= self.loop)
-		boot_extensions = ['jishaku', 'cogs.admin', 'cogs.meta', 'cogs.reader', 'cogs.search']
+		boot_extensions = ['jishaku', 'cogs.admin', 'cogs.logging', 'cogs.meta', 'cogs.reader', 'cogs.search']
 		for ext in boot_extensions:
 			self.load_extension(ext)
 
@@ -72,5 +79,5 @@ class Shinomiya(commands.AutoShardedBot):
 
 
 if __name__ == '__main__':
-	bot = Shinomiya()
+	bot = Shinomiya(config.webhook_config)
 	bot.run(config.token)
