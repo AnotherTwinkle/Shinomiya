@@ -145,7 +145,7 @@ class KaguyaPaginator(discord.ui.View):
 		assert interaction.data is not None
 		opt: int = int(interaction.data["values"][0])
 		await interaction.response.edit_message(embed=self.embeds[opt])
-
+		self.embed_pos = opt
 
 
 class Reader(commands.Cog):
