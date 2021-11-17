@@ -78,6 +78,6 @@ class Shinomiya(commands.AutoShardedBot):
 			 raise error
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	bot = Shinomiya(config.webhook_config)
 	bot.run(config.token)
