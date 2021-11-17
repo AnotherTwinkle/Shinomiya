@@ -15,7 +15,7 @@ os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
 class Shinomiya(commands.AutoShardedBot):
 	def __init__(self, webhook_config: List[str], *options):
-		intents = discord.Intents(messages= True, guilds= True)	
+		intents = discord.Intents.all()
 		super().__init__(intents= intents, command_prefix= self.determine_prefix, max_messages= None, *options)
 		self.webhook_config = webhook_config
 
