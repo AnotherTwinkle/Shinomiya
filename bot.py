@@ -30,7 +30,7 @@ class Shinomiya(commands.AutoShardedBot):
 	@discord.utils.cached_property
 	def webhook(self):
 		wh_id, wh_token = self.webhook_config
-		hook = discord.Webhook.partial(id=wh_id, token=wh_token, session= self.session)
+		hook = discord.Webhook.partial(id= wh_id, token= wh_token, session= self.session)
 		return hook
 
 	async def get_context(self, message, *, cls= None):
