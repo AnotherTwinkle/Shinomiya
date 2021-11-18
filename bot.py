@@ -13,6 +13,7 @@ import discord
 os.environ['JISHAKU_NO_UNDERSCORE'] = "True"
 os.environ['JISHAKU_NO_DM_TRACEBACK'] = "True"
 
+
 class Shinomiya(commands.AutoShardedBot):
 	def __init__(self, webhook_config: List[str], *options):
 		intents = discord.Intents.all()
